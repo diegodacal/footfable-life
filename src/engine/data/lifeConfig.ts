@@ -47,6 +47,11 @@ export const LIFE = {
     quietWeight: 45,
     scaleCurve: { min: 0.25, max: 2.5 },  // scales_with: 0.25 at 0 -> 2.5 at 100
     maxEventsPerWeek: 1,
+    // drama debt: every quiet week past the grace period thins QUIET, so a
+    // season can never pass with nothing happening (deterministic, no clock)
+    pityGraceWeeks: 4,
+    pityRamp: 0.12,
+    pityFloor: 0.25,
   },
 
   // Tally -> status flag thresholds (EVENT_CHAINS §2). Payoff events use these flags.

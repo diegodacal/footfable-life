@@ -376,6 +376,13 @@ All week counts are config, tuned in playtest like everything else.
 
 ## 5. Build sequence — fun-first, each milestone playable and pushed
 
+> **Status (v0.1, this branch):** M0 ✅ · M1 ✅ · M2 ✅ · M3 ✅ · M4 ✅ (first
+> pass: PWA + moment screens + the fun-tuning harness). 44 engine tests green,
+> browser-verified end-to-end. Ongoing: content expansion toward 250+ events,
+> presentation polish, and playtest-driven tuning — every number in
+> `src/engine/data/` is a starting guess awaiting the M1 playtest gate
+> (testers voluntarily starting season two), which requires real humans.
+
 Working rules for every milestone: engine pure and tested; all tuning in data; commit and
 push after every meaningful chunk; a deployed preview at each milestone's end; a named
 playtest gate that is about *fun*, not features.

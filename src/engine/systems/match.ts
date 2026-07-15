@@ -210,6 +210,8 @@ export function resolveMatch(p: MatchParams): MatchOutcome {
       rating, goals, assists, beats,
       decision,
       selectionReason,
+      usLabel: p.usName,
+      oppLabel: opponentName,
     },
   };
 }
