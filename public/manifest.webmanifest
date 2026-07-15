@@ -1,0 +1,18 @@
+{
+  "name": "Touchline — a footballer's life",
+  "short_name": "Touchline",
+  "description": "Live a footballer's whole life, one week at a time. Your career, your choices, your legacy — on your schedule, never the clock's.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#06130d",
+  "theme_color": "#0b1f16",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

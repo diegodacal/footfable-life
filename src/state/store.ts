@@ -12,7 +12,9 @@ import { saveCareer, loadMostRecent, enshrineCareer } from './db';
 export type Route =
   | 'title' | 'prospect' | 'ambitions' | 'hub' | 'match' | 'summary'
   | 'seasonEnd' | 'prologueEnd' | 'team' | 'league' | 'player'
-  | 'careerEnd' | 'legacy';
+  | 'careerEnd' | 'legacy' | 'moment';
+
+const MOMENT_KINDS = new Set(['debut', 'first_goal', 'callup', 'trophy', 'transfer', 'retirement']);
 
 interface PendingLife { event: LifeEventDef; reason: Reason }
 interface PendingMatch { decision: MatchDecisionDef; minute: number }
@@ -39,6 +41,7 @@ interface AppState {
   answerLife: (choiceIndex: number) => void;
   answerMatch: (choiceIndex: number) => void;
   finishMatchView: () => void;
+  finishMoment: () => void;
   finishSummary: () => void;
   dismissRecap: () => void;
 }
@@ -164,8 +167,12 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   finishMatchView: () => {
-    set({ matchViewed: true, route: 'summary' });
+    const { report } = get();
+    const big = report?.milestones.find((m) => MOMENT_KINDS.has(m.kind));
+    set({ matchViewed: true, route: big ? 'moment' : 'summary' });
   },
+
+  finishMoment: () => set({ route: 'summary' }),
 
   finishSummary: () => {
     const { report } = get();
@@ -189,5 +196,6 @@ function routeAfterReport(
     return;
   }
   const played = report.match && (report.match.minutes > 0 || report.match.involvement === 'bench');
-  set({ report, digests, matchViewed: false, route: played ? 'match' : 'summary' });
+  const big = !played && report.milestones.find((m) => MOMENT_KINDS.has(m.kind));
+  set({ report, digests, matchViewed: false, route: played ? 'match' : big ? 'moment' : 'summary' });
 }

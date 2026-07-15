@@ -64,8 +64,13 @@ export function rollLifeEvent(
   const eligible = eligibleEvents(state);
   if (eligible.length > 0) {
     const weights = eligible.map((e) => e.weight);
+    // drama debt: quiet weeks thin the QUIET weight so life always finds you
+    const sched = LIFE.scheduler;
+    const lastEvent = state.cooldowns['__lastevent__'] ?? 0;
+    const quietWeeks = Math.max(0, state.absoluteWeek - lastEvent - sched.pityGraceWeeks);
+    const quietWeight = sched.quietWeight * Math.max(sched.pityFloor, 1 - quietWeeks * sched.pityRamp);
     const pickPool: Array<{ def: LifeEventDef | null }> = [...eligible.map((e) => ({ def: e.def })), { def: null }];
-    const picked = weightedPick(rng, pickPool, [...weights, LIFE.scheduler.quietWeight]);
+    const picked = weightedPick(rng, pickPool, [...weights, quietWeight]);
     if (picked.def) {
       const why = fireReason(state, picked.def);
       if (picked.def.interrupt && interruptChoice === undefined) {
@@ -78,6 +83,7 @@ export function rollLifeEvent(
         reason: why,
       };
       state.cooldowns[picked.def.id] = state.absoluteWeek + (picked.def.cooldownWeeks ?? 6);
+      state.cooldowns['__lastevent__'] = state.absoluteWeek;
       state.seasonFired[picked.def.id] = (state.seasonFired[picked.def.id] ?? 0) + 1;
       if (picked.def.interrupt) {
         applyEventChoice(state, moves, picked.def, interruptChoice!);

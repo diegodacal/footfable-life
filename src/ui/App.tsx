@@ -12,8 +12,17 @@ import { SeasonEnd, PrologueEnd } from './screens/SeasonEnd';
 import { TeamTab, LeagueTab, PlayerTab } from './screens/Tabs';
 import { CareerEnd } from './screens/CareerEnd';
 import { Legacy } from './screens/Legacy';
+import { Moment } from './screens/Moment';
 import { EventModal } from './components/EventModal';
 import { Btn, Modal } from './bits';
+
+function MomentHost() {
+  const report = useStore((s) => s.report);
+  const finishMoment = useStore((s) => s.finishMoment);
+  const big = report?.milestones.find((m) => ['debut', 'first_goal', 'callup', 'trophy', 'transfer', 'retirement'].includes(m.kind));
+  if (!big) { finishMoment(); return null; }
+  return <Moment milestone={big} />;
+}
 
 export function App() {
   const booted = useStore((s) => s.booted);
@@ -47,6 +56,7 @@ export function App() {
       {route === 'player' && <PlayerTab />}
       {route === 'careerEnd' && <CareerEnd />}
       {route === 'legacy' && <Legacy />}
+      {route === 'moment' && <MomentHost />}
 
       {/* "Previously on your career" — shown once after time away */}
       {recap && (
