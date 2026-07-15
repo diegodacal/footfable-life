@@ -24,6 +24,29 @@ export function maybeGenerateOffer(state: CareerState): void {
   const rng = mulberry32(childSeed(state.seed, `offer:${state.absoluteWeek}`));
   const { you } = state;
   const requested = 'transfer_requested' in state.flags;
+
+  // the loan pathway: a young player short of minutes gets a season somewhere he'd PLAY
+  if (!state.loanFromClubId && you.age <= 21 && (you.status === 'Backup' || you.status === 'Youth')) {
+    const recentShare = you.minutesLog.slice(-6).reduce((a, b) => a + b, 0) / (Math.max(you.minutesLog.length, 1) * 90);
+    if (recentShare < 0.2 && rng() < 0.45 && !state.offers.some((o) => o.loan)) {
+      const myClub = clubById(state.world, state.clubId);
+      const dests = state.world.clubs.filter((c) => c.id !== state.clubId && c.nationId === myClub.nationId && c.strength < myClub.strength - 8);
+      if (dests.length > 0) {
+        const dest = pick(rng, dests);
+        const windowEnd = state.calendar.windowWeeks[state.calendar.windowWeeks.length - 1];
+        state.offers.push({
+          id: `loan_${state.absoluteWeek}_${dest.id}`,
+          clubId: dest.id, rolePromise: 'Regular', wageMult: 1.0, loan: true,
+          expiresWeek: state.absoluteWeek + (windowEnd - state.week) + 1,
+          reason: reason(`${dest.name} offer a season-long loan — you would actually play.`, [
+            up('guaranteed football beats a comfortable bench', 2),
+            flat('you return to your parent club when the season ends'),
+          ]),
+        });
+        return;
+      }
+    }
+  }
   const avg = you.season.ratingCount > 0 ? you.season.ratingSum / you.season.ratingCount : 6;
   let p = 0.10
     + (you.meters.reputation / 100) * 0.25
@@ -86,6 +109,19 @@ export function acceptOffer(state: CareerState, offerId: string): void {
 
   // the move: clubId changes; nationality NEVER does (engine invariant)
   const oldClubId = state.clubId;
+  if (offer.loan) {
+    state.loanFromClubId = oldClubId;
+    state.clubId = offer.clubId;
+    state.you.standing = 50;
+    state.you.minutesLog = [];
+    state.offers = [];
+    state.milestones.push({
+      id: `ms_loan_${state.absoluteWeek}`, week: state.week, season: state.season,
+      title: `On loan at ${to.name}`, detail: 'A season of real football. Come back a different player.',
+      kind: 'transfer',
+    });
+    return;
+  }
   state.clubId = offer.clubId;
   state.seasonsAtClub = 0;
   state.you.standing = 45;                      // a new coach, a clean slate

@@ -2,7 +2,6 @@
 // revealed beats; hard stops (debut, sub-on) demand a tap. Temporal honesty
 // is the engine's — this screen just refuses to peek ahead.
 import { useEffect, useRef, useState } from 'react';
-import { clubById } from '@engine/index';
 import { useStore } from '@state/store';
 import { Btn } from '../bits';
 
@@ -35,9 +34,7 @@ export function Match() {
   }, [match, paused]);
 
   if (!career || !match) return null;
-  const club = clubById(career.world, career.clubId);
   const beats = match.beats.slice(0, revealed);
-  const home = match.fixture.homeId === career.clubId;
 
   // scoreboard from revealed beats ONLY
   let ours = 0, theirs = 0, minute = 0;
@@ -49,9 +46,6 @@ export function Match() {
     minute = b.minute;
   }
   const done = revealed >= match.beats.length;
-  const oppName = career.phase === 'prologue'
-    ? 'Youth opposition'
-    : clubById(career.world, home ? match.fixture.awayId : match.fixture.homeId).name;
   const watching = match.involvement === 'bench' || match.involvement === 'out';
 
   const skip = () => {
@@ -68,9 +62,9 @@ export function Match() {
       <div className="p-5 pb-3 text-center border-b border-pitch-800">
         <p className="text-[11px] uppercase tracking-[0.18em] text-chalk-500">{minute}′</p>
         <div className="mt-1 flex items-center justify-center gap-4 text-lg font-bold">
-          <span className="flex-1 text-right truncate">{career.phase === 'prologue' ? `${club.name} U19` : club.name}</span>
+          <span className="flex-1 text-right truncate">{match.usLabel}</span>
           <span className="rounded-lg bg-pitch-800 px-3 py-1 tabular-nums">{ours} – {theirs}</span>
-          <span className="flex-1 text-left truncate">{oppName}</span>
+          <span className="flex-1 text-left truncate">{match.oppLabel}</span>
         </div>
         {match.rating !== null && (
           <p className="mt-2 text-xs text-chalk-500">

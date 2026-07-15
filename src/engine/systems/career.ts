@@ -46,6 +46,10 @@ export function createCareer(id: string, opts: CreateCareerOpts = {}): CareerSta
     offers: [],
     news: [],
     seasonsAtClub: 0,
+    prospectIndex: clamp(opts.prospectIndex ?? 0, 0, 2),
+    loanFromClubId: null,
+    debtWeeks: 0,
+    cup: null,
   };
   if (opts.ambitionIds?.length) setAmbitions(state, opts.ambitionIds);
   return state;
@@ -64,6 +68,24 @@ export function getActiveCareer(game: Game): CareerState {
 
 export function replaceCareer(game: Game, next: CareerState): Game {
   return { ...game, careers: game.careers.map((c) => (c.id === next.id ? next : c)) };
+}
+
+/** The two ending-only reflection beats (EVENT_CHAINS §9c) — emergent story, never nagging. */
+function pushReflections(state: CareerState): void {
+  const add = (title: string, detail: string) =>
+    state.milestones.push({ id: `ms_reflect_${title.length}_${state.absoluteWeek}`, week: state.week, season: state.season, title, detail, kind: 'retirement' });
+  if ('one_club_icon' in state.flags) {
+    add('The What-If', 'One club, one shirt, a statue in waiting. Some nights you wonder what you might have won elsewhere — and most nights, you don’t.');
+  }
+  if ('low_profile' in state.flags && !('icon_track' in state.flags)) {
+    add('The Quiet Craftsman', 'Never a headline, never a scandal — just years of showing up. The ones who know the game know exactly what you were.');
+  }
+  if ('global_icon' in state.flags || 'icon_track' in state.flags) {
+    add('The Show', 'They didn’t always love you, but they never once looked away.');
+  }
+  if ('pro_track' in state.flags) {
+    add('The Standard', 'Somewhere tonight, a coach is telling a teenager about how you trained.');
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -103,6 +125,16 @@ export function dispatch(input: CareerState, action: Action): CareerState {
       if (!def) return state;
       const moves: MeterMove[] = [];
       applyEventChoice(state, moves, def, action.choiceIndex);
+      // the authored ending: choosing to retire closes the career here and now
+      if (fired.eventId === 'evt_retirement_call' && action.choiceIndex === 0) {
+        state.endedReason = 'retired';
+        state.milestones.push({
+          id: `ms_retire_${state.absoluteWeek}`, week: state.week, season: state.season,
+          title: 'Retired, on your own terms', detail: `${state.you.career.apps} appearances, ${state.you.career.goals} goals, ${state.you.career.seasons} seasons. An ending you authored.`,
+          kind: 'retirement',
+        });
+        pushReflections(state);
+      }
       fired.resolved = true;
       fired.choiceIndex = action.choiceIndex;
       fired.reason = reason(`${def.title} — resolved.`, [

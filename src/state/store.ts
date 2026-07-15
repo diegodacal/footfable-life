@@ -6,11 +6,13 @@ import {
   type Action, type CareerState, type LifeEventDef, type MatchDecisionDef,
   type Reason, type WeekDecisions, type WeekReport, type Recap,
 } from '@engine/index';
-import { saveCareer, loadMostRecent } from './db';
+import { epithet } from '@engine/index';
+import { saveCareer, loadMostRecent, enshrineCareer } from './db';
 
 export type Route =
   | 'title' | 'prospect' | 'ambitions' | 'hub' | 'match' | 'summary'
-  | 'seasonEnd' | 'prologueEnd' | 'team' | 'league' | 'player';
+  | 'seasonEnd' | 'prologueEnd' | 'team' | 'league' | 'player'
+  | 'careerEnd' | 'legacy';
 
 interface PendingLife { event: LifeEventDef; reason: Reason }
 interface PendingMatch { decision: MatchDecisionDef; minute: number }
@@ -29,6 +31,7 @@ interface AppState {
 
   boot: () => Promise<void>;
   newCareer: (prospectIndex: number, seed?: number) => void;
+  endCareerAcknowledged: () => void;
   setRoute: (r: Route) => void;
   act: (a: Action) => void;
   advance: () => void;
@@ -68,11 +71,15 @@ export const useStore = create<AppState>((set, get) => ({
       career.offers ??= [];
       career.news ??= [];
       career.seasonsAtClub ??= 0;
+      career.prospectIndex ??= 0;
+      career.loanFromClubId ??= null;
+      career.debtWeeks ??= 0;
+      career.cup ??= null;
       set({
         career,
         booted: true,
-        recap: awayMs > RECAP_AFTER_MS ? buildRecap(career) : null,
-        route: 'hub',
+        recap: awayMs > RECAP_AFTER_MS && !career.endedReason ? buildRecap(career) : null,
+        route: career.endedReason ? 'careerEnd' : 'hub',
       });
     } else {
       set({ booted: true, route: 'title' });
@@ -91,8 +98,16 @@ export const useStore = create<AppState>((set, get) => ({
   act: (a) => {
     const { career } = get();
     if (!career) return;
-    commit(set, dispatch(career, a));
+    const next = dispatch(career, a);
+    commit(set, next);
+    // choosing to retire ends the career here — enshrine it
+    if (next.endedReason && !career.endedReason) {
+      void enshrineCareer(next, epithet(next));
+      set({ route: 'careerEnd' });
+    }
   },
+
+  endCareerAcknowledged: () => set({ route: 'legacy' }),
 
   advance: () => {
     const { career, pendingDecisions } = get();
@@ -168,7 +183,11 @@ function routeAfterReport(
   report: WeekReport,
   digests: string[],
 ): void {
+  if (state.endedReason) {
+    void enshrineCareer(state, epithet(state));
+    set({ report, digests, route: 'careerEnd' });
+    return;
+  }
   const played = report.match && (report.match.minutes > 0 || report.match.involvement === 'bench');
   set({ report, digests, matchViewed: false, route: played ? 'match' : 'summary' });
-  void state;
 }

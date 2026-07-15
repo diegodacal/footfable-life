@@ -10,6 +10,8 @@ import { Match } from './screens/Match';
 import { Summary } from './screens/Summary';
 import { SeasonEnd, PrologueEnd } from './screens/SeasonEnd';
 import { TeamTab, LeagueTab, PlayerTab } from './screens/Tabs';
+import { CareerEnd } from './screens/CareerEnd';
+import { Legacy } from './screens/Legacy';
 import { EventModal } from './components/EventModal';
 import { Btn, Modal } from './bits';
 
@@ -43,6 +45,8 @@ export function App() {
       {route === 'team' && <TeamTab />}
       {route === 'league' && <LeagueTab />}
       {route === 'player' && <PlayerTab />}
+      {route === 'careerEnd' && <CareerEnd />}
+      {route === 'legacy' && <Legacy />}
 
       {/* "Previously on your career" — shown once after time away */}
       {recap && (

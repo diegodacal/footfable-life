@@ -59,6 +59,11 @@ export function stakesLine(state: CareerState): string {
     return 'A free week. Push your development while others coast.';
   }
   if (kind === 'preseason') return 'Pre-season. The slate is clean and every place in the XI is winnable.';
+  if (kind === 'cup') {
+    if (state.cup?.called && state.cup.groupGamesPlayed < 3) return `The GLOBAL CUP. Group game ${state.cup.groupGamesPlayed + 1} of 3 — the whole world, and everyone from home, is watching you.`;
+    if (state.cup?.called) return 'The knockout rounds. One match from glory or the flight home — no second chances now.';
+    return 'The Global Cup plays on without you. Watch, burn, and make the next cycle impossible to ignore.';
+  }
   return 'A quiet week in the calendar. They don’t stay quiet long.';
 }
 

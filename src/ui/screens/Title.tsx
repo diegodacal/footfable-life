@@ -14,8 +14,9 @@ export function Title() {
         </p>
       </div>
       <div className="flex flex-col gap-3 w-full max-w-xs">
-        {career && <Btn kind="gold" onClick={() => setRoute('hub')}>Continue your career</Btn>}
+        {career && !career.endedReason && <Btn kind="gold" onClick={() => setRoute('hub')}>Continue your career</Btn>}
         <Btn onClick={() => setRoute('prospect')}>{career ? 'Start a new career' : 'Begin your career'}</Btn>
+        <Btn kind="ghost" onClick={() => setRoute('legacy')}>The Records Book</Btn>
       </div>
     </div>
   );

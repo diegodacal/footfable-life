@@ -144,9 +144,11 @@ export function runMetersEconomy(
     }
   }
 
-  // 4) economy ledger
+  // 4) economy ledger (the academy houses and feeds its prospects)
   const wage = state.phase === 'prologue' ? 1 : state.you.weeklyWage;
-  const upkeep = ECONOMY.upkeepBase + state.you.meters.lifestyle * ECONOMY.upkeepLifestyleSlope;
+  const upkeep = state.phase === 'prologue'
+    ? 0.5
+    : ECONOMY.upkeepBase + state.you.meters.lifestyle * ECONOMY.upkeepLifestyleSlope;
   const net = wage - upkeep;
   state.you.cash = Math.round((state.you.cash + net) * 10) / 10;
   const finTarget = clamp(30 + state.you.cash / 8, 5, 95);

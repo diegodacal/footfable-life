@@ -10,6 +10,7 @@ export { offerableAmbitions, activeAmbitions, ambitionProgress } from './systems
 export { leagueOf, tablePosition, clubById, rebuildTable } from './systems/league';
 export { minutesShare, statusAtLeast, STATUS_ORDER } from './systems/status';
 export { playingAbroad, climateClash, nextWindowWeek, playerOfClub } from './systems/transfers';
+export { isGlobalCupSeason, nationalTeamStrength, selectionVerdict, GLOBAL_CUP_EVERY } from './systems/nationalTeam';
 export { readinessBand, readinessRatingMod } from './systems/training';
 export { selectWeek, yourSelectionScore } from './systems/selection';
 export { EVENTS, EVENT_BY_ID } from './data/events';

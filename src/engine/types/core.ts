@@ -287,6 +287,8 @@ export interface MatchResult {
   beats: MatchBeat[];          // ordered, revealed one at a time by the UI
   decision?: { def: MatchDecisionDef; choiceIndex: number; success: boolean; text: string };
   selectionReason: Reason;
+  usLabel: string;             // display names (club or national side)
+  oppLabel: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -353,7 +355,25 @@ export interface TransferOffer {
   rolePromise: StatusRung;             // the status their squad suggests you'd hold
   wageMult: number;                    // multiplier on your status wage at that club
   expiresWeek: number;                 // absolute week
+  loan?: boolean;                      // season loan: you return at the boundary
   reason: Reason;                      // why they're in for you
+}
+
+// ---------------------------------------------------------------------------
+// National team & the Global Cup (M3). Eligibility is BIRTH NATION, always.
+// ---------------------------------------------------------------------------
+
+export interface GlobalCupState {
+  seasonHeld: number;
+  called: boolean;
+  callReason: Reason;
+  groupOpponents: Array<{ name: string; strength: number }>;
+  groupGamesPlayed: number;
+  groupPoints: number;
+  eliminated: boolean;
+  finishText: string | null;           // set when the run ends
+  champion: string | null;             // nation name once decided
+  yourGoals: number;
 }
 
 export interface NewsItem {
@@ -388,6 +408,10 @@ export interface CareerState {
   offers: TransferOffer[];             // live transfer offers (windows only)
   news: NewsItem[];                    // the world's notable moves, newest first
   seasonsAtClub: number;               // loyalty clock at the current club
+  prospectIndex: number;               // which of the three lives (Sliding Doors)
+  loanFromClubId: string | null;       // parent club while out on loan
+  debtWeeks: number;                   // consecutive weeks in the red
+  cup: GlobalCupState | null;          // live Global Cup, if this is a cup season
 }
 
 export interface World {

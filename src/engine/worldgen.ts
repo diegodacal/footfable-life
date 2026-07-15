@@ -229,15 +229,19 @@ export function makeYou(seed: number, prospect: Prospect): You {
   };
 }
 
-export function buildSeniorCalendar(): Calendar {
+export function buildSeniorCalendar(globalCup = false): Calendar {
   const weeks: Calendar['weeks'] = [];
-  for (let w = 1; w <= CALENDAR.seniorWeeks; w++) {
+  for (let w = 1; w < CALENDAR.seniorWeeks; w++) {
     if (w === 1) weeks.push('preseason');
-    else if (w === CALENDAR.finaleWeek) weeks.push('finale');
     else if ((CALENDAR.leagueRoundWeeks as readonly number[]).includes(w)) weeks.push('league');
     else weeks.push('rest');
   }
-  return { weeks, windowWeeks: [...CALENDAR.windowWeeks], totalWeeks: CALENDAR.seniorWeeks };
+  if (globalCup) {
+    // the Global Cup block: 3 group weeks + one knockout week, then the finale
+    weeks.push('cup', 'cup', 'cup', 'cup');
+  }
+  weeks.push('finale');
+  return { weeks, windowWeeks: [...CALENDAR.windowWeeks], totalWeeks: weeks.length };
 }
 
 export function buildPrologueCalendar(): Calendar {
