@@ -28,6 +28,11 @@
 - **Anti-FOMO is an engine invariant, enforced by tests:** no wall clock anywhere in the
   engine, no decay on absence, autosave on every mutation, and a "Previously on your career"
   recap that makes returning after two weeks away feel *better* than never leaving.
+- **The world ships at full canon** (owner's decision, on record): 12 real nations × 2
+  divisions × 12 clubs = 288 persistent clubs, cross-nation transfers, and national teams
+  whose call-ups follow your *birth* nation wherever you play. The build stages it (your
+  league fully live first, the world going live in M2, national teams in M3), but launch
+  scope is the whole world.
 - **First milestone: "One Season of Pull"** — a compressed youth prologue that *is* the
   tutorial, plus a full first professional season: saved, onboarded, stakes-framed, and
   playtested. The acceptance gate is not a feature list; it is *"testers voluntarily start
@@ -98,12 +103,15 @@
    hall of fame, and variety unlocks. The old design had a "Career Archive" as a passive list;
    it needed to be a destination.
 
-5. **The world was overbuilt relative to the product.** Twelve countries, ~288 clubs,
-   48 (or 32) national teams, a demographic tick — built *before* saves existed. The handoff
-   itself flags this. I'm cutting the world to what the fantasy needs: **one home nation with
-   two divisions, plus "abroad" as a small set of light-simulated foreign leagues** so the
-   big move abroad still exists (§4.2). Fun-per-screen decides, and a league table you're in
-   beats eleven you'll never look at.
+5. **The world was built in the wrong order, not at the wrong size.** My original call was
+   to cut the 12-country world to one home nation; the owner overruled it — **the full canon
+   ships at launch** (12 nations × 2 divisions × 12 clubs, cross-nation transfers, national
+   teams). Decision accepted and now on record (§4.2, register #6). What survives of my
+   critique is the *sequencing* and the *surface*: the old build grew the world before
+   saves existed, and browsable breadth is not the product. So the world is staged across
+   milestones behind the fun gates (§5), and the UI stays player-first — you see the slice
+   of the world that is about *you* (your league, your suitors, your country), with the rest
+   arriving as news. Sim scale is launch scope; screen scale is still earned fun-per-screen.
 
 6. **The uniform 30-week season is a sim convenience, not a paced story.** Shorter seasons
    mean more season-finales, more windows, more ambition verdicts per hour of play. New
@@ -297,26 +305,54 @@ self-contained and every absence costless.
 | **Reshape** | Season shape: youth prologue ~10 wks, senior season ~24 wks | §4.3 |
 | **Reshape** | Economy: wage + sponsor + upkeep + debt→broke stays; agent simplified to visible tiers with a straightforward quality/cost trade | Hidden-reliability trust-marking cut — a meta-game about distrusting UI advice is depth the session never feels |
 | **Reshape** | Media: folded into events + Narrator | Not a standalone system |
-| **Cut (launch)** | 12-country persistent world, demographic world tick at scale, cross-league scouting screens | §4.2 replaces it |
+| **Keep (owner's call)** | The full 12-nation × 288-club persistent world, cross-nation transfers, the demographic tick, national teams with birth-nation eligibility | §4.2; staged across M1–M3, launch scope |
 | **Cut (launch)** | Parallel careers UI, goalkeepers, cosmetics, breakthrough traits (§8 of TRAINING_SYSTEM) | Breakthroughs stay parked exactly as the old doc parked them |
 | **Cut (forever)** | Any monetization mechanic inside the fiction | Reaffirming the old call |
 
-### 4.2 The world
+### 4.2 The world — full canon at launch (owner's decision)
 
-**One fictional home nation** — two divisions of 10 clubs each (promotion/relegation,
-loans, derbies, a domestic cup from M3) — fully simulated. **Abroad-lite:** 3–4 named
-foreign leagues at light tier (strength-rated clubs, real enough tables) as transfer
-destinations, because *the big move abroad is core fantasy* and a career wants somewhere to
-go. **National team lite:** call-ups on merit plus a quadrennial Global Cup arc (M3) — the
-career-peak stage, without 48 federations behind it. The full multi-country world remains a
-possible expansion; nothing in the engine bakes against it.
+The 12-country world ships, per the original canon and the owner's explicit call:
+
+- **Structure:** 12 real nations (Brazil, Argentina, Spain, France, Morocco, South Africa,
+  Nigeria, Japan, China, South Korea, Palestine, Mexico), each with **two divisions of 12
+  fictional clubs** — 288 clubs, promotion/relegation, the second tier supporting loans and
+  the washout path. Clubs, competitions, and players are fictional; only the nations are real.
+- **Persistence:** the whole Tier-1 population is real and persistent (~6,500 lean player
+  records — comfortably on-device). The yearly **demographic tick** runs as designed in
+  SQUAD_TRANSFERS_NATIONAL: ageing, decline, retirements, youth intake biased toward thin
+  positions, a viability floor. The world ages whether or not you're watching it — but only
+  *in game time*, never in wall-clock time (the anti-FOMO invariants apply to the world too).
+- **Simulation tiers (how 288 clubs stay cheap):** **deep** — your club and positional
+  rivals, full weekly fidelity; **light** — every other club holds a real, persistent roster
+  but resolves weeks in aggregate (real tables, real transfers, abstracted match detail);
+  **shell** — 20 minnow nations with no clubs, generated as squads only at tournament time.
+- **Cross-nation transfers — the big move abroad is core fantasy.** Transfer windows, the
+  AI club economy by budget tier, incoming offers with scoutable role promises,
+  player-initiated requests, free agency — across all 12 nations. A foreign move engages
+  the cultural layer the expansion doc designed: origin-keyed homesickness, language,
+  climate, faith, and family-expectation events, so moving abroad plays as a *new chapter
+  of life*, not a palette swap.
+- **National identity — an engine invariant:** nationality is fixed at creation (one of the
+  12) and **never changes with your club**. National-team selection is pure merit over the
+  nation's entire population, *home and abroad* — a call-up finds you in whatever league you
+  play. Club country affects travel/readiness texture and the cultural events; it never
+  affects eligibility. Tested like the other invariants.
+- **The Global Cup:** the World Cup analog, quadrennial, **32 nations** (12 real + 20
+  generated minnows — adopting SQUAD_TRANSFERS_NATIONAL's revision over the older 48;
+  smaller field, better bracket, less shell content).
+- **The surfacing rule:** sim scale is not screen scale. The UI stays player-first — your
+  league table, your suitors, your national team, and a news feed for the world's notable
+  moves. Browsable breadth (foreign league tables, other nations' squads) appears only
+  where a career reason points at it (scouting a suitor, a rival's career, the Global Cup).
 
 ### 4.3 Season & career shape
 
 - **Youth prologue:** ~10 weeks, compressed, ends with the first-team call-up decision. It
   is the tutorial (§5, M1).
-- **Senior season:** ~24 weeks — 18 league rounds (10-club double round-robin), cup rounds
-  woven in (M3+), two transfer windows, rest weeks as breathing room. Chapter breaks at
+- **Senior season:** ~24 weeks — league of 12 clubs on the **compact split format** the old
+  canon locked (11-round single round-robin + 5 split rounds = 16 league matches), cup
+  rounds woven in (M3+), two transfer windows, national-team weeks overlaying existing
+  non-league weeks (no new week type), rest weeks as breathing room. Chapter breaks at
   natural act boundaries.
 - **Career:** ~12–18 seasons, age-phased as designed (youth/prime/decline), ending in an
   authored retirement (or the honest hard-fails: washout, broke, career-ending injury).
@@ -327,8 +363,11 @@ All week counts are config, tuned in playtest like everything else.
 
 - **M1:** ~30 curated events (youth + first-season appropriate) + ~10 ambitions + Narrator
   template set v1.
-- **M2:** ~120 events, 2 chains deep (Pro/Maverick complete), ~25 ambitions.
-- **M3:** ~200 events, all six chains, reinvention + reflection beats, tournament arc.
+- **M2:** ~140 events, 2 chains deep (Pro/Maverick complete), ~25 ambitions, and the
+  **far-from-home / cultural set** (homesick, language, climate, faith,
+  family-expectation) — required once cross-nation moves go live.
+- **M3:** ~220 events, all six chains, reinvention + reflection beats, the Global Cup
+  tournament arc, national-team drama.
 - **M4:** 250+, guided by playtest repetition reports.
 - The builder-script pipeline (source-of-truth JSON, validated, authored via a generator)
   carries over as an approach — it made 71 events cheap; we need it for 250.
@@ -344,15 +383,22 @@ playtest gate that is about *fun*, not features.
 ### M0 — Foundations *(small, fast)*
 Vite + React + TypeScript strict + Tailwind + Vitest + Zustand + **Dexie persistence from
 day zero**. Engine/UI/state split scaffolded; seeded RNG; the anti-FOMO invariant tests and
-the no-wall-clock lint rule land *before any system code*. CI + deploy config.
+the no-wall-clock lint rule land *before any system code*. The **world data model** (nations,
+clubs, tiers, nationality-at-birth) is part of the foundation types, so nothing later
+retrofits it. CI + deploy config.
 
 ### M1 — **"One Season of Pull"** *(the defensible first milestone)*
 The smallest build that tests the actual product bet — not "does the sim work" (we know it
 does) but *"does a session pull you into the next one?"*
 
 Contents:
-- **Career start as story:** three prospect cards framed as backstories, not stat sheets;
-  position locked; initial ambitions chosen.
+- **The world, generated and breathing:** all 12 nations / 288 clubs / rosters created from
+  the seed at career start; your division runs at deep fidelity; every other league resolves
+  at light fidelity so season-end tables exist worldwide. No transfers or national teams
+  yet — the world is alive, not yet interactive.
+- **Career start as story:** three prospect cards framed as backstories, not stat sheets —
+  including your nationality (one of the 12) and its cultural profile; position locked;
+  initial ambitions chosen.
 - **The youth prologue as diegetic tutorial:** ~10 weeks that introduce, in fiction order:
   training focus → the first match feed → selection and your rival → intensity/readiness
   before a big fixture → a first life event → a coach request → the call-up finale.
@@ -371,20 +417,24 @@ nobody reports "I didn't know why" (the Reason contract holding in practice) or 
 was happening" (the compression working). Fail = we tune M1 — we do not proceed to M2 on a
 loop that isn't pulling.
 
-### M2 — **The Identity Engine**
+### M2 — **The Identity Engine & The World Goes Live**
 Aging across seasons and age-phased training; the Pro/Maverick chains complete with
-payoffs, epithets, and moment screens; Character read; transfers-lite (windows, incoming
-offers with scoutable role promises, player-initiated requests); contracts and wages
-proper; ~120 events; ambitions catalog v2.
-**Gate:** two testers' season-3 careers are *visibly different lives*, and each can name who
-their player is becoming without being asked in those terms.
+payoffs, epithets, and moment screens; Character read; ambitions catalog v2. And the world
+becomes interactive: **cross-nation transfers** (windows, AI club economy by budget tier,
+incoming offers with scoutable role promises, player-initiated requests, free agency),
+contracts and wages proper, the **demographic tick**, and the **far-from-home cultural
+event layer** so a foreign move plays as a new life chapter; ~140 events.
+**Gate:** two testers' season-3 careers are *visibly different lives*, each can name who
+their player is becoming without being asked in those terms — and a tester who moves abroad
+describes it as a chapter, not a menu.
 
 ### M3 — **The Long Arc**
 Full career span: decline, the authored retirement (two curated moments, as designed),
 hard-fails with escalating warnings; the Legacy layer complete (Records Book, Hall of Fame,
 variety unlocks, Sliding Doors); the remaining four chains + reinvention/reflection beats;
-loans; the domestic cup; national-team lite with the quadrennial tournament; abroad
-transfers.
+loans; the domestic cups; **national teams** — merit call-ups over each nation's worldwide
+population, friendlies on existing weeks, and the quadrennial 32-nation Global Cup as the
+career-peak arc.
 **Gate:** a tester finishes an entire career, and the strongest observed signal — starts
 another unprompted.
 
@@ -425,13 +475,25 @@ every milestone gate; where players *stop* is the datum we never had.
 5. **Legacy unlocks are variety, never power.** *Why:* power unlocks punish new profiles and
    create meta-grind — push, not pull. *Cost:* weaker hook for players who only respond to
    numbers going up. Accepted; wrong players to design for.
-6. **One home nation + abroad-lite instead of the 12-country world.** *Why:* fun-per-screen;
-   content and performance budgets; the fantasy needs *a* big move abroad, not eleven browsable
-   foreign leagues. *Cost:* less world-texture and no cross-country career tourism at launch;
-   the engine keeps world-expansion open (nations/leagues are data).
+6. **The full 12-nation / 288-club world ships at launch** *(owner's decision, overriding my
+   proposed cut — on record).* Cross-nation transfers across all 12 leagues; **nationality is
+   fixed at birth and national-team eligibility never follows your club** — call-ups reach
+   you abroad, selected on pure merit over the nation's worldwide population. My directive
+   within the decision: stage the build behind the fun gates (world breathing in M1,
+   interactive in M2, national teams in M3), keep the tiered simulation so scale stays cheap,
+   and keep the UI player-first so sim scale never becomes screen clutter. *Cost:* a bigger
+   content bill (the cultural layer becomes launch content), a heavier M2/M3, and more tuning
+   surface. Accepted knowingly — the SQUAD_TRANSFERS_NATIONAL spec means it's engineering to
+   a design, not new design.
+   - Sub-decision: **Global Cup field = 32** (12 real + 20 minnows), adopting that doc's
+     revision over the older 48 — better bracket, less shell content. Flag if you want 48.
+   - Sub-decision: dual nationality / switching allegiance is **out of scope** — one birth
+     nation, for life. Simple, legible, and true to the fantasy's stakes.
 7. **Shorter seasons (~24 wks) and a compressed youth prologue (~10 wks).** *Why:* more
-   finales, verdicts, and windows per hour; the tutorial earns its length. *Cost:* less room
-   for slow-burn intra-season arcs; chains compensate across seasons.
+   finales, verdicts, and windows per hour; the tutorial earns its length. League format is
+   the canon's own compact split (12 clubs, 11 round-robin + 5 split rounds = 16 matches),
+   which fits 24 weeks with cup, windows, and NT weeks. *Cost:* less room for slow-burn
+   intra-season arcs; chains compensate across seasons.
 8. **Persistence and anti-FOMO invariants before any system code.** *Why:* the old build's
    #1 product blocker was building breadth on sand; the invariants are cheap on day zero and
    brutal to retrofit. *Cost:* M0 is slightly slower. Trivially worth it.
@@ -457,9 +519,10 @@ every milestone gate; where players *stop* is the datum we never had.
 1. **The engagement model (§3)** — especially the *finite careers, serial retention* stance
    and the story-not-power reward rule. This is the product's spine; I want you nodding, not
    acquiescing.
-2. **The world cut (§4.2)** — one home nation + abroad-lite + national-team lite. It
-   overturns a lot of prior canon (SQUAD_TRANSFERS_NATIONAL.md's 12×12 world). I'm confident;
-   confirm you can live with it at launch.
+2. ~~The world cut~~ — **RESOLVED by owner:** the full 12-nation / 288-club world is launch
+   scope, with cross-nation transfers and birth-nation national-team eligibility (§4.2,
+   register #6). Two sub-decisions inside it are mine and flagged there: the 32-nation
+   Global Cup field, and no dual nationality.
 3. **The M1 gate** — "testers voluntarily start season two" as the bar we don't build past
    until met.
 4. **Naming** — I'll keep building under **Touchline** unless you want the rename now;
