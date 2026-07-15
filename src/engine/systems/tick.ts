@@ -18,7 +18,8 @@ import { stakesLine, digestLine } from './narrator';
 import { clubById, leagueOf, generateSplitFixtures, rebuildTable, resolveWorldWeek, tablePosition } from './league';
 import { reason, up, flat } from './reason';
 import { buildSeniorCalendar } from '../worldgen';
-import { generateFreshLeagues } from './seasonRoll';
+import { rollSeason } from './seasonRoll';
+import { maybeGenerateOffer, runAiTransferWindow } from './transfers';
 
 const YOUTH_OPPONENTS = ['the Northern Academy', 'the Capital Youth XI', 'the Port Boys', 'the Mining Town Academy', 'the University Colts'];
 
@@ -33,6 +34,12 @@ export function advanceWeek(input: CareerState, decisions: WeekDecisions = {}): 
 
   // -- coach request may arrive (senior only)
   maybeCoachRequest(state);
+
+  // -- transfer window: offers arrive, the world's market moves
+  maybeGenerateOffer(state);
+  if (state.phase === 'senior' && state.week === state.calendar.windowWeeks[state.calendar.windowWeeks.length - 1]) {
+    runAiTransferWindow(state, `s${state.season}w${state.week}`);
+  }
 
   // -- Phase A: life event roll (pre-match; can pause the week)
   const eventPhase = rollLifeEvent(state, decisions.life);
@@ -307,20 +314,22 @@ function completeSeason(state: CareerState, milestones: Milestone[]): void {
   rebuildTable(league);
   const pos = tablePosition(league, state.clubId);
   if (pos === 1) {
-    milestones.push(ms(state, 'trophy', 'LEAGUE CHAMPIONS', `${clubById(state.world, state.clubId).name} win the title — and you were part of it.`));
+    milestones.push(ms(state, 'trophy', league.division === 1 ? 'LEAGUE CHAMPIONS' : 'DIVISION 2 CHAMPIONS', `${clubById(state.world, state.clubId).name} win the title — and you were part of it.`));
   }
   milestones.push(ms(state, 'season', `Season ${state.season} complete`, seasonSummaryLine(state, pos)));
   settleSeasonAmbitions(state);
   state.you.career.seasons++;
 
-  // roll over
+  // season-boundary market + the world ages one year, then fresh fixtures
+  runAiTransferWindow(state, `boundary-s${state.season}`);
   state.season++;
   state.week = 1;
   state.calendar = buildSeniorCalendar();
   state.you.readiness = Math.max(state.you.readiness, TRAINING.readiness.seasonReset);
   state.seasonFired = {};
+  state.offers = [];
   resetSeasonStats(state);
-  regenerateLeagueFixtures(state);
+  rollSeason(state);
 }
 
 function seasonSummaryLine(state: CareerState, pos: number): string {
@@ -338,7 +347,3 @@ function resetSeasonStats(state: CareerState): void {
   state.you.season = { apps: 0, starts: 0, minutes: 0, goals: 0, assists: 0, ratingSum: 0, ratingCount: 0 };
 }
 
-function regenerateLeagueFixtures(state: CareerState): void {
-  // fresh fixtures for every league, same clubs (promotion/relegation lands in M2)
-  generateFreshLeagues(state);
-}

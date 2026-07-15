@@ -63,10 +63,15 @@ export const useStore = create<AppState>((set, get) => ({
     const row = await loadMostRecent();
     if (row) {
       const awayMs = Date.now() - row.savedAt;
+      // forward-migrate older saves: new fields get safe defaults
+      const career = row.state;
+      career.offers ??= [];
+      career.news ??= [];
+      career.seasonsAtClub ??= 0;
       set({
-        career: row.state,
+        career,
         booted: true,
-        recap: awayMs > RECAP_AFTER_MS ? buildRecap(row.state) : null,
+        recap: awayMs > RECAP_AFTER_MS ? buildRecap(career) : null,
         route: 'hub',
       });
     } else {

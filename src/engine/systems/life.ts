@@ -206,6 +206,7 @@ function gatesPass(state: CareerState, def: LifeEventDef, matchThisWeek: boolean
   for (const [m, v] of Object.entries(g.minMeter ?? {})) if (you.meters[m as MeterId] < v) return false;
   for (const [m, v] of Object.entries(g.maxMeter ?? {})) if (you.meters[m as MeterId] > v) return false;
   for (const f of g.requiresFlag ?? []) if (!(f in state.flags)) return false;
+  if (g.requiresAnyFlag && !g.requiresAnyFlag.some((f) => f in state.flags)) return false;
   for (const f of g.forbidsFlag ?? []) if (f in state.flags) return false;
   for (const [t, v] of Object.entries(g.tallyAtLeast ?? {})) if ((state.tallies[t as TallyId] ?? 0) < (v as number)) return false;
   if (g.minStatus && !statusAtLeast(you.status, g.minStatus)) return false;
@@ -214,6 +215,20 @@ function gatesPass(state: CareerState, def: LifeEventDef, matchThisWeek: boolean
   if (g.maxAge !== undefined && you.age > g.maxAge) return false;
   if (g.familyExpectation && you.profile.familyExpectation !== g.familyExpectation) return false;
   if (g.faith && you.profile.faith !== g.faith) return false;
+  if (g.faithNot && you.profile.faith === g.faithNot) return false;
+  if (g.observant !== undefined && you.profile.observant !== g.observant) return false;
+  if (g.origin && you.profile.origin !== g.origin) return false;
+  if (g.abroad !== undefined) {
+    const clubNation = state.world.clubs.find((c) => c.id === state.clubId)?.nationId;
+    const isAbroad = clubNation !== undefined && clubNation !== you.profile.origin;
+    if (isAbroad !== g.abroad) return false;
+  }
+  if (g.climateClash !== undefined) {
+    const clubNationId = state.world.clubs.find((c) => c.id === state.clubId)?.nationId;
+    const clubClimate = state.world.nations.find((n) => n.id === clubNationId)?.climate;
+    const clash = clubClimate !== undefined && clubClimate !== you.profile.climateOrigin;
+    if (clash !== g.climateClash) return false;
+  }
   return true;
 }
 
@@ -245,6 +260,13 @@ export function applyEventChoice(state: CareerState, moves: MeterMove[], def: Li
   for (const flag of fx.flags ?? []) state.flags[flag] = state.absoluteWeek;
   for (const [tally, inc] of Object.entries(fx.tally ?? {})) {
     state.tallies[tally as TallyId] = (state.tallies[tally as TallyId] ?? 0) + (inc as number);
+  }
+  // chains: a choice can put its consequence on the doormat
+  if (fx.followupId && !state.inbox.some((e) => e.eventId === fx.followupId) && !state.eventLog.some((e) => e.eventId === fx.followupId)) {
+    state.inbox.push({
+      eventId: fx.followupId, week: state.week, season: state.season, resolved: false,
+      reason: reason('This traces straight back to a choice you made.', [flat('consequences arrive on their own schedule')]),
+    });
   }
   // tally -> status flag thresholds (chains arm here; payoffs land in M2)
   for (const [tally, cfg] of Object.entries(LIFE.tallyThresholds)) {

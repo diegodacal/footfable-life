@@ -188,16 +188,20 @@ export interface EventGates {
   minMeter?: Partial<Record<MeterId, number>>;
   maxMeter?: Partial<Record<MeterId, number>>;
   requiresFlag?: string[];
+  requiresAnyFlag?: string[];             // at least one present
   forbidsFlag?: string[];
   tallyAtLeast?: Partial<Record<TallyId, number>>;
   minStatus?: StatusRung;
   matchWithinDays?: number;               // match-eve gate
   minAge?: number;
   maxAge?: number;
-  abroad?: boolean;                       // playing outside origin nation (M2)
+  abroad?: boolean;                       // playing outside origin nation
+  origin?: NationId;                      // cultural events keyed to the individual
   faith?: CulturalProfile['faith'];
+  faithNot?: CulturalProfile['faith'];    // e.g. any faith at all (faithNot: 'none')
+  observant?: boolean;
   familyExpectation?: 'high';
-  climateClash?: boolean;                 // origin vs current club climate differ (M2)
+  climateClash?: boolean;                 // origin vs current club climate differ
 }
 
 export type CareerStage = 'youth' | 'break' | 'prime' | 'vet' | 'twilight' | 'post';
@@ -339,6 +343,25 @@ export interface CoachRequest {
   honored: boolean | null;             // null = undecided
 }
 
+// ---------------------------------------------------------------------------
+// Transfers (M2): offers cross nations freely; nationality NEVER moves.
+// ---------------------------------------------------------------------------
+
+export interface TransferOffer {
+  id: string;
+  clubId: string;
+  rolePromise: StatusRung;             // the status their squad suggests you'd hold
+  wageMult: number;                    // multiplier on your status wage at that club
+  expiresWeek: number;                 // absolute week
+  reason: Reason;                      // why they're in for you
+}
+
+export interface NewsItem {
+  season: number;
+  week: number;
+  text: string;
+}
+
 export interface CareerState {
   id: string;
   seed: number;
@@ -362,6 +385,9 @@ export interface CareerState {
   absoluteWeek: number;                // monotonic across seasons
   endedReason: 'retired' | 'broke' | 'washed_out' | null;
   lastReports: WeekReport[];           // ring buffer (recap source), newest first
+  offers: TransferOffer[];             // live transfer offers (windows only)
+  news: NewsItem[];                    // the world's notable moves, newest first
+  seasonsAtClub: number;               // loyalty clock at the current club
 }
 
 export interface World {
@@ -442,5 +468,8 @@ export type Action =
   | { type: 'setTraining'; plan: TrainingPlan }
   | { type: 'resolveCoachRequest'; accept: boolean }
   | { type: 'resolveInboxEvent'; eventId: string; choiceIndex: number }
-  | { type: 'setAmbitions'; defIds: string[] };
+  | { type: 'setAmbitions'; defIds: string[] }
+  | { type: 'acceptOffer'; offerId: string }
+  | { type: 'rejectOffer'; offerId: string }
+  | { type: 'requestTransfer' };
 

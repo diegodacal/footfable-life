@@ -1,8 +1,11 @@
-// The authored life-event library — M1 set (~30 events, youth + first-season
-// appropriate). Pure data over the schema in types/core. Extended each milestone.
+// The authored life-event library. Core set below; chain payoffs in
+// eventsChains.ts, the cultural far-from-home layer in eventsCulture.ts.
+// Pure data over the schema in types/core. Extended each milestone.
 import type { LifeEventDef } from '../types/core';
+import { CHAIN_EVENTS } from './eventsChains';
+import { CULTURE_EVENTS } from './eventsCulture';
 
-export const EVENTS: LifeEventDef[] = [
+const CORE_EVENTS: LifeEventDef[] = [
   // ------------------------------------------------------------ youth / prologue
   {
     id: 'evt_early_night', title: 'Early Night', category: 'life:nightlife',
@@ -306,6 +309,8 @@ export const EVENTS: LifeEventDef[] = [
     ],
   },
 ];
+
+export const EVENTS: LifeEventDef[] = [...CORE_EVENTS, ...CHAIN_EVENTS, ...CULTURE_EVENTS];
 
 export const EVENT_BY_ID: Record<string, LifeEventDef> = Object.fromEntries(
   EVENTS.map((e) => [e.id, e]),

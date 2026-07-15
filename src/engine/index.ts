@@ -9,6 +9,7 @@ export { stakesLine, nextBeat, weekSignal, digestLine, buildRecap, epithet, ordi
 export { offerableAmbitions, activeAmbitions, ambitionProgress } from './systems/ambitions';
 export { leagueOf, tablePosition, clubById, rebuildTable } from './systems/league';
 export { minutesShare, statusAtLeast, STATUS_ORDER } from './systems/status';
+export { playingAbroad, climateClash, nextWindowWeek, playerOfClub } from './systems/transfers';
 export { readinessBand, readinessRatingMod } from './systems/training';
 export { selectWeek, yourSelectionScore } from './systems/selection';
 export { EVENTS, EVENT_BY_ID } from './data/events';

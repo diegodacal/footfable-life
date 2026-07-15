@@ -6,6 +6,7 @@ import { TRAINING } from '../data/trainingConfig';
 import { EVENT_BY_ID } from '../data/events';
 import { applyEventChoice } from './life';
 import { setAmbitions } from './ambitions';
+import { acceptOffer, rejectOffer, requestTransfer } from './transfers';
 import { reason, up, down } from './reason';
 
 export interface CreateCareerOpts {
@@ -42,6 +43,9 @@ export function createCareer(id: string, opts: CreateCareerOpts = {}): CareerSta
     absoluteWeek: 1,
     endedReason: null,
     lastReports: [],
+    offers: [],
+    news: [],
+    seasonsAtClub: 0,
   };
   if (opts.ambitionIds?.length) setAmbitions(state, opts.ambitionIds);
   return state;
@@ -110,6 +114,18 @@ export function dispatch(input: CareerState, action: Action): CareerState {
     }
     case 'setAmbitions': {
       setAmbitions(state, action.defIds);
+      return state;
+    }
+    case 'acceptOffer': {
+      acceptOffer(state, action.offerId);
+      return state;
+    }
+    case 'rejectOffer': {
+      rejectOffer(state, action.offerId);
+      return state;
+    }
+    case 'requestTransfer': {
+      requestTransfer(state);
       return state;
     }
   }

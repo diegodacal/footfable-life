@@ -67,6 +67,16 @@ export function stakesLine(state: CareerState): string {
 // ---------------------------------------------------------------------------
 
 export function nextBeat(state: CareerState): NextBeat {
+  // a live transfer offer trumps everything — careers turn on these
+  if (state.offers.length > 0) {
+    const club = clubById(state.world, state.offers[0].clubId);
+    const abroad = club.nationId !== state.you.profile.origin;
+    return {
+      kind: 'window',
+      title: `${club.name} are at the door`,
+      detail: abroad ? 'A move abroad is on the table. Your country still calls you either way.' : 'A transfer offer awaits your answer before the window shuts.',
+    };
+  }
   // pending inbox first — a decision is always a beat
   if (state.inbox.length > 0) {
     return { kind: 'event', title: 'Something needs your answer', detail: 'A situation is waiting in your life inbox.', };
@@ -125,6 +135,7 @@ export function weekSignal(state: CareerState, report: WeekReport): WeekSignal {
   if (report.life.firedEvent && !report.life.firedEvent.resolved) reasons.push('something waits in your inbox');
   if (state.coachRequest && state.coachRequest.honored === null) reasons.push('the coach wants an answer');
   if (report.seasonComplete || report.prologueComplete) reasons.push('the season closed');
+  if (state.offers.length > 0) reasons.push('a transfer offer is on the table');
   const nextKind = state.calendar.weeks[state.week - 1];
   if (nextKind === 'league' && state.you.readiness < SIGNALS.lowReadinessBeforeMatch) reasons.push('low readiness before a match');
   const closeAmb = activeAmbitions(state).find((a) => a.active.progress >= SIGNALS.ambitionCloseness);

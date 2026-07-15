@@ -9,6 +9,7 @@ import { Btn, Card, SectionTitle, StatusChip, ReasonBlock } from '../bits';
 import { BottomNav } from '../components/BottomNav';
 import { useState } from 'react';
 import { EventModal } from '../components/EventModal';
+import { OfferModal } from '../components/OfferModal';
 
 const BLOCKS: Block[] = ['technical', 'physical', 'mental'];
 const INTENSITIES: Intensity[] = ['intensive', 'balanced', 'recover'];
@@ -19,6 +20,7 @@ export function Hub() {
   const continueToBeat = useStore((s) => s.continueToBeat);
   const act = useStore((s) => s.act);
   const [inboxOpen, setInboxOpen] = useState<string | null>(null);
+  const [offerOpen, setOfferOpen] = useState<string | null>(null);
   if (!career) return null;
   const { you, training } = career;
   const club = clubById(career.world, career.clubId);
@@ -68,6 +70,18 @@ export function Hub() {
           <p className="text-sm text-chalk-300 mt-1">{beat.detail}</p>
           <p className="text-xs text-chalk-500 mt-3 italic">{stakes}</p>
         </Card>
+
+        {/* transfer offers */}
+        {career.offers.map((o) => {
+          const oc = clubById(career.world, o.clubId);
+          return (
+            <Card key={o.id} className="border-flood-400" onClick={() => setOfferOpen(o.id)}>
+              <SectionTitle>Transfer offer — the window is open</SectionTitle>
+              <h4 className="font-bold">{oc.name} want you</h4>
+              <p className="text-xs text-chalk-500 mt-1">They see you as a {o.rolePromise}. Tap to scout them and decide.</p>
+            </Card>
+          );
+        })}
 
         {/* pending: coach request */}
         {career.coachRequest && career.coachRequest.honored === null && (
@@ -162,6 +176,9 @@ export function Hub() {
           def={openEvent}
           onChoose={(i) => { act({ type: 'resolveInboxEvent', eventId: openEvent.id, choiceIndex: i }); setInboxOpen(null); }}
         />
+      )}
+      {offerOpen && career.offers.find((o) => o.id === offerOpen) && (
+        <OfferModal offer={career.offers.find((o) => o.id === offerOpen)!} onClose={() => setOfferOpen(null)} />
       )}
       <BottomNav />
     </div>

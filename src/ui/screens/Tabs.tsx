@@ -83,6 +83,14 @@ export function LeagueTab() {
           </tbody>
         </table>
       </Card>
+      {career.news.length > 0 && (
+        <Card className="mt-4">
+          <SectionTitle>Around the world</SectionTitle>
+          {career.news.slice(0, 8).map((n, i) => (
+            <p key={i} className="text-xs text-chalk-500 mb-1">S{n.season} W{n.week} — {n.text}</p>
+          ))}
+        </Card>
+      )}
       <BottomNav />
     </div>
   );
@@ -142,6 +150,23 @@ export function PlayerTab() {
           Character: <b className="text-chalk-100">{BAND_LABEL[char.band]}</b> ({char.value}) — how the world reads your conduct. It shapes which doors open.
         </p>
       </Card>
+
+      {career.phase === 'senior' && !('transfer_requested' in career.flags) && (
+        <Card>
+          <SectionTitle>Your future</SectionTitle>
+          <p className="text-xs text-chalk-500 mb-2">
+            Unhappy here? You can let it be known you want a move. The coach won’t love it — but offers will come easier in the windows.
+          </p>
+          <button
+            onClick={() => useStore.getState().act({ type: 'requestTransfer' })}
+            className="text-xs text-calm-500 underline underline-offset-2">
+            Request a transfer
+          </button>
+        </Card>
+      )}
+      {'transfer_requested' in career.flags && (
+        <Card><p className="text-xs text-flood-400">You’ve asked to move on. The next window will bring suitors.</p></Card>
+      )}
 
       <Card>
         <SectionTitle>Money</SectionTitle>
