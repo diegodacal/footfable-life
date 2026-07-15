@@ -1,0 +1,20 @@
+// The engine's public API — the ONLY surface the UI, state and tests import.
+export * from './types/core';
+export { createCareer, createGame, getActiveCareer, replaceCareer, dispatch, type CreateCareerOpts } from './systems/career';
+export { advanceWeek, tick } from './systems/tick';
+export { describeReason } from './systems/reason';
+export { generateProspects, type Prospect } from './worldgen';
+export { deriveCharacter, careerStage, applyEventChoice } from './systems/life';
+export { stakesLine, nextBeat, weekSignal, digestLine, buildRecap, epithet, ordinal, type Recap } from './systems/narrator';
+export { offerableAmbitions, activeAmbitions, ambitionProgress } from './systems/ambitions';
+export { leagueOf, tablePosition, clubById, rebuildTable } from './systems/league';
+export { minutesShare, statusAtLeast, STATUS_ORDER } from './systems/status';
+export { readinessBand, readinessRatingMod } from './systems/training';
+export { selectWeek, yourSelectionScore } from './systems/selection';
+export { EVENTS, EVENT_BY_ID } from './data/events';
+export { AMBITIONS, AMBITION_BY_ID } from './data/ambitions';
+export { NATIONS, NATION_BY_ID } from './data/nations';
+export { ATTRIBUTE_BLOCKS, ATTRIBUTE_LABEL, BLOCK_LABEL, TRAINING, agePhase } from './data/trainingConfig';
+export { POSITION_LABEL, POSITION_WEIGHTS, weightedAbility } from './data/positions';
+export { LIFE, BAND_LABEL, METER_LABEL, type CharacterBand } from './data/lifeConfig';
+export { CALENDAR, ECONOMY, ENGINE_VERSION, MATCH, SELECTION, SIGNALS, SQUAD, STATUS, WORLD } from './data/constants';

@@ -329,6 +329,7 @@ export interface You {
   weeklyWage: number;
   season: SeasonStats;
   career: CareerTotals;
+  minutesLog: number[];                // minutes per week, newest last (status window)
 }
 
 export interface CoachRequest {
@@ -419,3 +420,27 @@ export interface NextBeat {
   detail: string;
   kind: 'match' | 'decision' | 'event' | 'ambition' | 'window' | 'finale' | 'callup';
 }
+
+// ---------------------------------------------------------------------------
+// Advancing a week. The engine is pure & deterministic per (seed, week), so an
+// interactive week is advanced by CALLING AGAIN with the decision filled in —
+// the same moments replay identically up to the decision point. Nothing is
+// committed until the result kind is 'done' (temporal honesty at state level).
+// ---------------------------------------------------------------------------
+
+export interface WeekDecisions {
+  life?: number;                       // choice index for an interrupt event
+  match?: number;                      // choice index for an in-match decision
+}
+
+export type AdvanceResult =
+  | { kind: 'done'; state: CareerState; report: WeekReport }
+  | { kind: 'needs-life'; event: LifeEventDef; reason: Reason }
+  | { kind: 'needs-match'; decision: MatchDecisionDef; minute: number };
+
+export type Action =
+  | { type: 'setTraining'; plan: TrainingPlan }
+  | { type: 'resolveCoachRequest'; accept: boolean }
+  | { type: 'resolveInboxEvent'; eventId: string; choiceIndex: number }
+  | { type: 'setAmbitions'; defIds: string[] };
+
